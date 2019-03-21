@@ -7,3 +7,9 @@ hidden/
 stuff/
 attn_vis-master/
 emnlp/
+
+*data/
+nohup*
+log/
+logs/
+bert/

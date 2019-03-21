@@ -6,7 +6,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#		 http://www.apache.org/licenses/LICENSE-2.0
+#        http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -94,6 +94,8 @@ flags.DEFINE_string('similarity_fn', 'rouge_l', 'Which similarity function to us
                             sentence similarity or coverage. Must be one of {rouge_l, ngram_similarity}')
 flags.DEFINE_boolean('plot_distributions', False, 'If true, save plots of each distribution -- importance, similarity, mmr. This setting makes decoding take much longer.')
 
+# self
+flags.DEFINE_string('out_data_path', 'tf_data', 'Where to put output tf examples')
 
 def calc_features(cnn_dm_train_data_path, hps, vocab, batcher, save_path):
     if not os.path.exists(save_path): os.makedirs(save_path)
@@ -111,7 +113,7 @@ def fit_tfidf_vectorizer(hps, vocab):
     batcher = Batcher(FLAGS.data_path, vocab, decode_model_hps, single_pass=FLAGS.single_pass)
     all_sentences = []
     while True:
-        batch = batcher.next_batch()	# 1 example repeated across batch
+        batch = batcher.next_batch()    # 1 example repeated across batch
         if batch is None: # finished decoding dataset in single_pass mode
             break
         all_sentences.extend(batch.raw_article_sents[0])
@@ -135,8 +137,9 @@ def main(unused_argv):
         FLAGS.data_path = os.path.join(FLAGS.data_root, FLAGS.dataset_name, FLAGS.dataset_split + '*')
     if not os.path.exists(os.path.join(FLAGS.data_root, FLAGS.dataset_name)) or len(os.listdir(os.path.join(FLAGS.data_root, FLAGS.dataset_name))) == 0:
         print('No TF example data found at %s so creating it from raw data.' % os.path.join(FLAGS.data_root, FLAGS.dataset_name))
-        convert_data.process_dataset(FLAGS.dataset_name)
+        convert_data.process_dataset(FLAGS.dataset_name, FLAGS.out_data_path)
 
+    print("FLAGS.data_path : %s" % FLAGS.data_path) # self
     logging.set_verbosity(logging.INFO) # choose what level of logging you want
     logging.info('Starting seq2seq_attention in %s mode...', (FLAGS.mode))
 

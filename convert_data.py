@@ -65,8 +65,8 @@ def process_dataset(dataset_name, out_data_path, TAC_path='', DUC_path='', custo
             'abstract_dir': os.path.join(TAC_path, 'summary_data/s08/models')
         },
         'duc_2004': {
-            'article_dir': os.path.join(DUC_path, 'Original/DUC2004_Summarization_Documents/duc2004_testdata/tasks1and2/duc2004_tasks1and2_docs/docs'),
-            'abstract_dir': os.path.join(DUC_path, 'past_duc/duc2004/duc2004_results/ROUGE/eval/models/2')
+            'article_dir': os.path.join(DUC_path, 'DUC2004_Summarization_Documents/duc2004_testdata/tasks1and2/duc2004_tasks1and2_docs/docs'),
+            'abstract_dir': os.path.join(DUC_path, 'duc2004_results/ROUGE/eval/models/2')
         },
         'duc_2003': {
             'article_dir': os.path.join(DUC_path, 'Original/DUC2003_Summarization_Documents/duc2003_testdata/task2/docs'),
@@ -217,7 +217,7 @@ def get_article_abstract(multidoc_dirname, article_dir, abstract_dir, is_tac, is
     if is_custom_dataset:
         article, abstracts, doc_indices, raw_article_sents = get_custom_article_abstract(multidoc_dirname, article_dir)
     else:
-        article, doc_indices, raw_article_sents = get_article(article_dir, multidoc_dirname, is_tac, is_single_doc=False)
+        article, doc_indices, raw_article_sents = get_article(article_dir, multidoc_dirname, is_tac)
         abstracts = get_abstract(multidoc_dirname, abstract_dir, is_tac)
     return article, abstracts, doc_indices, raw_article_sents
 
@@ -267,7 +267,7 @@ if __name__ == '__main__':
     flags.DEFINE_string('dataset_name', 'example_custom_dataset', 'Which dataset to convert from raw data to tf examples')
     flags.DEFINE_string('out_data_path', 'tf_data', 'Where to put output tf examples')
     flags.DEFINE_string('TAC_path', '', 'Path to raw TAC data.')
-    flags.DEFINE_string('DUC_path', '', 'Path to raw DUC data.')
+    flags.DEFINE_string('DUC_path', '/data/intern2/bishe/grad/data/duc', 'Path to raw DUC data.')
     flags.DEFINE_string('custom_dataset_path', 'example_custom_dataset/', 'Path to custom dataset. Format of custom dataset must be:\n'
                         + 'One file for each topic...\n'
                         + 'Distinct articles will be separated by one blank line (two carriage returns \\n)...\n'
