@@ -95,7 +95,7 @@ flags.DEFINE_boolean('plot_distributions', False, 'If true, save plots of each d
 
 # self
 flags.DEFINE_string('out_data_path', 'tf_data', 'Where to put output tf examples')
-flags.DEFINE_string('is_chs', False, 'If true, chinese input')
+flags.DEFINE_boolean('is_chs', False, 'If true, chinese input')
 
 
 def calc_features(cnn_dm_train_data_path, hps, vocab, batcher, save_path):
