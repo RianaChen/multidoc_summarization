@@ -6,7 +6,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#		 http://www.apache.org/licenses/LICENSE-2.0
+#        http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -105,7 +105,6 @@ def run_beam_search(sess, model, vocab, batch, ex_index, hps):
     enc_sentences, enc_tokens = batch.tokenized_sents[0], batch.word_ids_sents[0]
     importances = pg_mmr_functions.get_importances(model, batch, enc_states, vocab, sess, hps)
     mmr_init = importances
-
 
     # Initialize beam_size-many hyptheses
     hyps = [Hypothesis(tokens=[vocab.word2id(data.START_DECODING)],

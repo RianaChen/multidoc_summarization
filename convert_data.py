@@ -46,7 +46,10 @@ def is_quote(tokens):
 
 def process_sent(sent):
     line = sent.lower()
-    tokenized_sent = nltk.word_tokenize(line)
+    if FLAGS.is_chs:
+        tokenized_sent = line.split(" ")
+    else:
+        tokenized_sent = nltk.word_tokenize(line)
     tokenized_sent = [fix_bracket_token(token) for token in tokenized_sent]
     return tokenized_sent
 
@@ -82,6 +85,8 @@ def process_dataset(dataset_name, out_data_path, TAC_path='', DUC_path='', custo
         is_tac = 'tac' in dataset_name
         is_custom_dataset = False
     else:
+        if "chs" in dataset_name:
+            FLAGS.is_chs = True
         article_dir = custom_dataset_path
         abstract_dir = custom_dataset_path
         is_tac = False
@@ -176,8 +181,11 @@ def get_article(article_dir, multidoc_dirname, is_tac):
             else:
                 contents = soup.findAll('text')[0].renderContents().replace('\n', ' ').strip()
                 contents = ' '.join(contents.split())
-            sentences = nltk.tokenize.sent_tokenize(contents)
-            fixed_sentences = fix_exceptions(sentences)
+            if FLAGS.is_chs:
+                sentences = re.split('。|！|\!|？|\?|\n', contents.strip())
+            else:
+                sentences = nltk.tokenize.sent_tokenize(contents)
+            # fixed_sentences = fix_exceptions(sentences)
             article, raw_article_sents, doc_indices = add_sents_to_article(sentences, article, raw_article_sents, doc_indices, doc_idx)
     article = article.encode('utf-8').strip()
     return article, doc_indices, raw_article_sents
@@ -185,9 +193,12 @@ def get_article(article_dir, multidoc_dirname, is_tac):
 def process_abstract(abstract_lines):
     abstract = ''
     for line in abstract_lines:
-        line = line.lower()
-        line = line.replace(u'\x92', "'")
-        tokenized_sent = nltk.word_tokenize(line)
+        if FLAGS.is_chs:
+            tokenized_sent = re.split('。|！|\!|？|\?|\n', line.strip())
+        else:
+            line = line.lower()
+            line = line.replace(u'\x92', "'")
+            tokenized_sent = nltk.word_tokenize(line)
         tokenized_sent = [fix_bracket_token(token) for token in tokenized_sent]
         sent = ' '.join(tokenized_sent)
         abstract += '<s> ' + sent + ' </s> '

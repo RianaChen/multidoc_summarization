@@ -4,6 +4,7 @@ import itertools
 import util
 from util import get_similarity, rouge_l_similarity
 import importance_features
+import randwalk
 import dill
 import time
 import random
@@ -200,6 +201,11 @@ def get_tfidf_importances(raw_article_sents):
     similarity_matrix = cosine_similarity(sent_reps, cluster_rep)
     return np.squeeze(similarity_matrix)
 
+def get_rw_importances(raw_article_sents, doc_indices):
+    sentenceTFISFVectors, sentencesLen = randwalk.get_tfisf_data(raw_article_sents)
+    importances = randwalk.rw_calculator(sentenceTFISFVectors, doc_indices, sentencesLen)
+    return importances
+
 def get_importances(model, batch, enc_states, vocab, sess, hps):
     if FLAGS.pg_mmr:
         enc_sentences, enc_tokens = batch.tokenized_sents[0], batch.word_ids_sents[0]
@@ -216,6 +222,8 @@ def get_importances(model, batch, enc_states, vocab, sess, hps):
             importances_hat = get_svr_importances(enc_states[0], enc_sentences, enc_sent_indices, svr_model, sent_representations_separate)
         elif FLAGS.importance_fn == 'tfidf':
             importances_hat = get_tfidf_importances(batch.raw_article_sents[0])
+        elif FLAGS.importance_fn == 'rw':
+            importances_hat = get_rw_importances(batch.raw_article_sents[0],batch.doc_indices[0])
         importances = util.special_squash(importances_hat)
     else:
         importances = None
