@@ -37,8 +37,7 @@ random.seed(222)
 FLAGS = flags.FLAGS
 
 # Where to find data
-flags.DEFINE_string('dataset_name', 'example_custom_dataset', 'Which dataset to use. Makes a log dir based on name.\
-                                                Must be one of {tac_2011, tac_2008, duc_2004, duc_tac, cnn_dm} or a custom dataset name')
+flags.DEFINE_string('dataset_name', 'example_custom_dataset', 'Which dataset to use. Makes a log dir based on name. Must be one of {tac_2011, tac_2008, duc_2004, duc_tac, cnn_dm} or a custom dataset name')
 flags.DEFINE_string('data_root', 'tf_data', 'Path to root directory for all datasets (already converted to TensorFlow examples).')
 flags.DEFINE_string('vocab_path', 'logs/vocab', 'Path expression to text vocabulary file.')
 flags.DEFINE_string('pretrained_path', 'logs/pretrained_model_tf1.2.1', 'Directory of pretrained model from See et al.')
@@ -84,8 +83,8 @@ flags.DEFINE_boolean('restore_best_model', False, 'Restore the best model in the
 flags.DEFINE_boolean('debug', False, "Run in tensorflow's debug mode (watches for NaN/inf values)")
 
 # PG-MMR settings
-flags.DEFINE_boolean('pg_mmr', False, 'If true, use the PG-MMR model.')
-flags.DEFINE_string('importance_fn', 'tfidf', 'Which model to use for calculating importance. Must be one of {svr, tfidf, oracle}.')
+flags.DEFINE_boolean('pg_mmr', True, 'If true, use the PG-MMR model.')
+flags.DEFINE_string('importance_fn', 'svr', 'Which model to use for calculating importance. Must be one of {svr, tfidf, oracle, rw}.')
 flags.DEFINE_float('lambda_val', 0.6, 'Lambda factor to reduce similarity amount to subtract from importance. Set to 0.5 to make importance and similarity have equal weight.')
 flags.DEFINE_integer('mute_k', 7, 'Pick top k sentences to select and mute all others. Set to -1 to turn off.')
 flags.DEFINE_boolean('retain_mmr_values', False, 'Only used if using mute mode. If true, then the mmr being\
@@ -96,6 +95,8 @@ flags.DEFINE_boolean('plot_distributions', False, 'If true, save plots of each d
 
 # self
 flags.DEFINE_string('out_data_path', 'tf_data', 'Where to put output tf examples')
+flags.DEFINE_boolean('is_chs', False, 'If true, chinese input')
+
 
 def calc_features(cnn_dm_train_data_path, hps, vocab, batcher, save_path):
     if not os.path.exists(save_path): os.makedirs(save_path)
@@ -204,6 +205,10 @@ def main(unused_argv):
                 svr_model = importance_features.run_training(train_x, train_y)
                 with open(importance_model_path, 'wb') as f:
                     cPickle.dump(svr_model, f)
+
+        # Train the random walk model on sogou set if not already trained
+        if FLAGS.importance_fn == 'rw':
+            print("Random walk model choosed")
 
     # Create a batcher object that will create minibatches of data
     batcher = Batcher(FLAGS.data_path, vocab, hps, single_pass=FLAGS.single_pass)
