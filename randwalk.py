@@ -2,10 +2,12 @@
 import numpy
 import re
 import math
+import jieba
 
-def get_tfisf_data(raw_article_sents):
+def get_tfisf_data(raw_article_sents, doc_indices):
     sentenceTFISFVectors = []
     sentencesLen = []
+    indoc = []
 
     # calculate tfisf and the sentence vector
     word_list = []
@@ -24,7 +26,7 @@ def get_tfisf_data(raw_article_sents):
 
             for sen in sentences:
                 # 输入文件已经分好词了，直接用空格分割就行
-                list_of_words = line.split(" ")
+                list_of_words = sen.split(" ")
                 list_of_words = [x for x in list_of_words if x != '']
                 sentencesLen.append(len(list_of_words))
 
@@ -39,7 +41,8 @@ def get_tfisf_data(raw_article_sents):
     for k in isf:
         isf[k] = 1 + math.log(total_sens / isf[k])
 
-    for docs in data:
+    doc_index = 0
+    for docs in raw_article_sents:
         # get tf & sentence vec
         for sentence in docs:
             sentences = re.split('。|！|\!|？|\?|\n', sentence)
@@ -67,8 +70,10 @@ def get_tfisf_data(raw_article_sents):
                     vec[i] = vec[i]*tf[k]
 
                 sentenceTFISFVectors.append(vec)
-        
-    return sentenceTFISFVectors, sentencesLen
+                indoc.append(doc_indices[doc_index])
+        doc_index += 1
+
+    return sentenceTFISFVectors, indoc, sentencesLen
 
 def rw_calculator(sentenceTFISFVectors, indoc, sentencesLen):
     N = len(sentenceTFISFVectors)
