@@ -33,6 +33,8 @@ import dill
 from absl import app, flags, logging
 import random
 
+os.environ['CUDA_VISIBLE_DEVICES']='2'
+
 random.seed(222)
 FLAGS = flags.FLAGS
 
@@ -84,7 +86,7 @@ flags.DEFINE_boolean('debug', False, "Run in tensorflow's debug mode (watches fo
 
 # PG-MMR settings
 flags.DEFINE_boolean('pg_mmr', True, 'If true, use the PG-MMR model.')
-flags.DEFINE_string('importance_fn', 'svr', 'Which model to use for calculating importance. Must be one of {svr, tfidf, oracle, rw}.')
+flags.DEFINE_string('importance_fn', 'rw', 'Which model to use for calculating importance. Must be one of {svr, tfidf, oracle, rw}.')
 flags.DEFINE_float('lambda_val', 0.6, 'Lambda factor to reduce similarity amount to subtract from importance. Set to 0.5 to make importance and similarity have equal weight.')
 flags.DEFINE_integer('mute_k', 7, 'Pick top k sentences to select and mute all others. Set to -1 to turn off.')
 flags.DEFINE_boolean('retain_mmr_values', False, 'Only used if using mute mode. If true, then the mmr being\
@@ -95,7 +97,7 @@ flags.DEFINE_boolean('plot_distributions', False, 'If true, save plots of each d
 
 # self
 flags.DEFINE_string('out_data_path', 'tf_data', 'Where to put output tf examples')
-flags.DEFINE_string('is_chs', False, 'If true, chinese input')
+flags.DEFINE_boolean('is_chs', False, 'If true, chinese input')
 
 
 def calc_features(cnn_dm_train_data_path, hps, vocab, batcher, save_path):

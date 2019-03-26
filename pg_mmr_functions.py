@@ -202,8 +202,9 @@ def get_tfidf_importances(raw_article_sents):
     return np.squeeze(similarity_matrix)
 
 def get_rw_importances(raw_article_sents, doc_indices):
-    sentenceTFISFVectors, sentencesLen = randwalk.get_tfisf_data(raw_article_sents)
-    importances = randwalk.rw_calculator(sentenceTFISFVectors, doc_indices, sentencesLen)
+    sentenceTFISFVectors, indoc, sentencesLen = randwalk.get_tfisf_data(raw_article_sents, doc_indices)
+    print(len(sentenceTFISFVectors), len(indoc))
+    importances = randwalk.rw_calculator(sentenceTFISFVectors, indoc, sentencesLen)
     return importances
 
 def get_importances(model, batch, enc_states, vocab, sess, hps):
