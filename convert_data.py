@@ -267,7 +267,7 @@ if __name__ == '__main__':
     flags.DEFINE_string('dataset_name', 'example_custom_dataset', 'Which dataset to convert from raw data to tf examples')
     flags.DEFINE_string('out_data_path', 'tf_data', 'Where to put output tf examples')
     flags.DEFINE_string('TAC_path', '', 'Path to raw TAC data.')
-    flags.DEFINE_string('DUC_path', '/data/intern2/bishe/grad/data/duc', 'Path to raw DUC data.')
+    flags.DEFINE_string('DUC_path', '../data/duc', 'Path to raw DUC data.')
     flags.DEFINE_string('custom_dataset_path', 'example_custom_dataset/', 'Path to custom dataset. Format of custom dataset must be:\n'
                         + 'One file for each topic...\n'
                         + 'Distinct articles will be separated by one blank line (two carriage returns \\n)...\n'
@@ -278,28 +278,4 @@ if __name__ == '__main__':
                         + 'See the directory example_custom_dataset for an example')
     app.run(main)
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+        
