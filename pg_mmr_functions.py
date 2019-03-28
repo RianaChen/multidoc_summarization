@@ -228,9 +228,13 @@ def get_importances(model, batch, enc_states, vocab, sess, hps):
         importances = util.special_squash(importances_hat)
     else:
         importances = None
+    # self
+    print(FLAGS.importance, len(importances))
     return importances
 
 def update_similarity_and_mmr(hyp, importances, batch, enc_tokens, vocab):
     summ_sents, summ_tokens = get_summ_sents_and_tokens(hyp.tokens, batch, vocab)
     hyp.similarity = get_similarity(enc_tokens, summ_tokens, vocab)
+    # self
+    print(FLAGS.importance, len(importances), len(hyp.similarity))
     hyp.mmr = calc_mmr_from_sim_and_imp(hyp.similarity, importances)
