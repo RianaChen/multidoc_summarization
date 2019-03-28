@@ -33,8 +33,6 @@ import dill
 from absl import app, flags, logging
 import random
 
-os.environ['CUDA_VISIBLE_DEVICES']='2'
-
 random.seed(222)
 FLAGS = flags.FLAGS
 
