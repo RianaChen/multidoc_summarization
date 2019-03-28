@@ -10,7 +10,7 @@ def get_tfisf_data(raw_article_sents):
 
     # calculate tfisf and the sentence vector
     word_list = []
-    total_sens = 0
+    total_sens = len(raw_article_sents)
     isf = {}
 
     for sen in raw_article_sents:
@@ -128,7 +128,7 @@ def rw_calculator(sentenceTFISFVectors, indoc, sentencesLen):
 
     # A1: probability transition matrix of affinity-preserving random walk
     # mu: the damping factor
-    mu =  0.85
+    mu =  0.8
     min_error = math.exp(-4)
     A1 = numpy.dot(D.I, W).T
     A1 = mu * A1 + (1 - mu) * numpy.dot(y, e.T)
@@ -136,7 +136,7 @@ def rw_calculator(sentenceTFISFVectors, indoc, sentencesLen):
     v = numpy.ones((N, 1))
     v = v / sum(v)
     # sentencesLen: the length of each sentence
-    for c in range(0, 1000):
+    for c in range(0, 5000):
         if c > 30:
             # virtualSummary: the summary based on transient distribution
             virtualSummary = summarize(v, A1, sentencesLen)

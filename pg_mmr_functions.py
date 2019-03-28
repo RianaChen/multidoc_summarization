@@ -203,7 +203,6 @@ def get_tfidf_importances(raw_article_sents):
 
 def get_rw_importances(raw_article_sents, doc_indices):
     sentenceTFISFVectors, sentencesLen = randwalk.get_tfisf_data(raw_article_sents)
-    print("rw_importance", len(sentenceTFISFVectors), len(doc_indices))
     importances = randwalk.rw_calculator(sentenceTFISFVectors, doc_indices, sentencesLen)
     return importances
 
@@ -228,13 +227,9 @@ def get_importances(model, batch, enc_states, vocab, sess, hps):
         importances = util.special_squash(importances_hat)
     else:
         importances = None
-    # self
-    print(FLAGS.importance, len(importances))
     return importances
 
 def update_similarity_and_mmr(hyp, importances, batch, enc_tokens, vocab):
     summ_sents, summ_tokens = get_summ_sents_and_tokens(hyp.tokens, batch, vocab)
     hyp.similarity = get_similarity(enc_tokens, summ_tokens, vocab)
-    # self
-    print(FLAGS.importance, len(importances), len(hyp.similarity))
     hyp.mmr = calc_mmr_from_sim_and_imp(hyp.similarity, importances)
