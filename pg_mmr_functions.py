@@ -203,7 +203,7 @@ def get_tfidf_importances(raw_article_sents):
 
 def get_rw_importances(raw_article_sents, doc_indices):
     sentenceTFISFVectors, sentencesLen = randwalk.get_tfisf_data(raw_article_sents)
-    importances = randwalk.rw_calculator(sentenceTFISFVectors, doc_indices, sentencesLen)
+    importances = randwalk.rw_calculator(sentenceTFISFVectors, doc_indices, sentencesLen, FLAGS.mu, FLAGS.batch)
     return importances
 
 def get_importances(model, batch, enc_states, vocab, sess, hps):

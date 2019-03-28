@@ -96,6 +96,8 @@ flags.DEFINE_boolean('plot_distributions', False, 'If true, save plots of each d
 # self
 flags.DEFINE_string('out_data_path', 'tf_data', 'Where to put output tf examples')
 flags.DEFINE_boolean('is_chs', False, 'If true, chinese input')
+flags.DEFINE_float('mu', 0.85, 'mu for random walk')
+flags.DEFINE_integer('batch', 1000, 'loop batch for random walk')
 
 
 def calc_features(cnn_dm_train_data_path, hps, vocab, batcher, save_path):
