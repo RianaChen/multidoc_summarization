@@ -4,76 +4,57 @@ import re
 import math
 import jieba
 
-def get_tfisf_data(raw_article_sents, doc_indices):
+def get_tfisf_data(raw_article_sents):
     sentenceTFISFVectors = []
     sentencesLen = []
-    indoc = []
 
     # calculate tfisf and the sentence vector
     word_list = []
     total_sens = 0
     isf = {}
 
-    for docs in raw_article_sents:
+    for sen in raw_article_sents:
         # get word list and setencelen
-        for sentence in docs:
-            # sentence segmentation
-            sentences = re.split('。|！|\!|？|\?|\n', sentence)
-            sentences = [x.lstrip().strip()
-                         for x in sentences if x != '']
-            sentences = [x for x in sentences if x != '']
-            total_sens += len(sentences)
+        # raw article sents 是已经拉平的文章句子，利用doc_indices就可以对应到文章原结构
+        # 输入文件已经分好词了，直接用空格分割就行
+        list_of_words = sen.split(" ")
+        list_of_words = [x for x in list_of_words if x != '']
+        sentencesLen.append(len(list_of_words))
 
-            for sen in sentences:
-                # 输入文件已经分好词了，直接用空格分割就行
-                list_of_words = sen.split(" ")
-                list_of_words = [x for x in list_of_words if x != '']
-                sentencesLen.append(len(list_of_words))
+        uniq_words = set(list_of_words)
+        for w in uniq_words:
+            isf[w] = isf.get(w, 0.0) + 1.0
 
-                uniq_words = set(list_of_words)
-                for w in uniq_words:
-                    isf[w] = isf.get(w, 0.0) + 1.0
-
-                for w in uniq_words:
-                    if w not in word_list:
-                        word_list.append(w)
+        for w in uniq_words:
+            if w not in word_list:
+                word_list.append(w)
 
     for k in isf:
         isf[k] = 1 + math.log(total_sens / isf[k])
 
-    doc_index = 0
-    for docs in raw_article_sents:
+    for sen in raw_article_sents:
         # get tf & sentence vec
-        for sentence in docs:
-            sentences = re.split('。|！|\!|？|\?|\n', sentence)
-            sentences = [x.lstrip().strip()
-                         for x in sentences if x != '']
-            sentences = [x for x in sentences if x != '']
+        tf = {}
+        list_of_words = sen.split(" ")
+        list_of_words = [x for x in list_of_words if x != '']
 
-            for sen in sentences:
-                tf = {}
-                list_of_words = jieba.lcut(sen)
-                list_of_words = [x for x in list_of_words if x != '']
+        for w in list_of_words:
+            tf[w] = tf.get(w, 0.0) + 1.0
 
-                for w in list_of_words:
-                    tf[w] = tf.get(w, 0.0) + 1.0
+        length = float(len(list_of_words))
 
-                length = float(len(list_of_words))
+        for k in tf:
+            tf[k] = tf[k] / length
 
-                for k in tf:
-                    tf[k] = tf[k] / length
+        vec = [0.0] * len(word_list)
+        for k in list_of_words:
+            i = word_list.index(k)
+            vec[i] = isf[k]
+            vec[i] = vec[i]*tf[k]
 
-                vec = [0.0] * len(word_list)
-                for k in list_of_words:
-                    i = word_list.index(k)
-                    vec[i] = isf[k]
-                    vec[i] = vec[i]*tf[k]
+        sentenceTFISFVectors.append(vec)
 
-                sentenceTFISFVectors.append(vec)
-                indoc.append(doc_indices[doc_index])
-        doc_index += 1
-
-    return sentenceTFISFVectors, indoc, sentencesLen
+    return sentenceTFISFVectors, sentencesLen
 
 def rw_calculator(sentenceTFISFVectors, indoc, sentencesLen):
     N = len(sentenceTFISFVectors)
@@ -133,7 +114,7 @@ def rw_calculator(sentenceTFISFVectors, indoc, sentencesLen):
     l = list()
     l.append(1)
     ini = 0
-    for i in range(1, len(indoc)):
+    for i in range(1, N):
         if indoc[i] == indoc[i-1]:
             l.append(2 ** ( - ( i - ini )))
         else:
